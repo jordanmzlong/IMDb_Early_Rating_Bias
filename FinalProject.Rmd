@@ -1,0 +1,68 @@
+---
+title: "211215-1400Regressions"
+output:
+  pdf_document: default
+  html_notebook:
+    code_folding: none
+---
+
+Reference: https://cran.r-project.org/web/packages/plm/vignettes/plmPackage.html
+
+Install and load required R packages
+```{r}
+if (!require("plm")) install.packages("plm")
+library(plm) # function: plm
+library(stargazer)
+library(arm)
+```
+
+
+```{r}
+source("data directory path.R")
+dat <- read.csv(file="211215clean_movie_panel.csv", header=TRUE, sep=",", na = ".")
+attach(dat)
+```
+
+
+Fixed Effects
+```{r}
+FE <- plm(cumavg_review ~ as.factor(first_review_month_offset) + X2018_or_later + as.factor(month) + as.factor(first_review_month), data = dat, index = c("movie","first_review_month_offset"), model = "within")
+summary(FE)
+```
+Random Effects
+```{r}
+RE <- plm(cumavg_review ~ as.factor(first_review_month_offset) + X2018_or_later + as.factor(first_review_month) + as.factor(month), data = dat, index = c("movie","first_review_month_offset"), model = "random")
+summary(RE)
+```
+
+Hausman test
+```{r}
+phtest(FE,RE)
+```
+The p-value is 2.2e-12 and so we reject the null hypothesis at the 5% significance level, which supports using the FE estimation framework.
+
+g)
+Output results in LaTeX in table format
+```{r warning=FALSE}
+stargazer(FE, RE, title="Panel Data", column.labels=c("FE","RE"), no.space = TRUE, omit.stat=c("f", "ser"))
+```
+```{r}
+#library(arm)
+#plot(RE$coefficients[2:25])
+#arrows(x1=summary(RE)$coefficients[2:25,2], angle=90)
+library(ggplot2)
+y <- RE$coefficients[2:25]
+sd <- summary(RE)$coefficients[2:25,2]
+qplot(1:24, RE$coefficients[2:25])+geom_errorbar(aes(x=1:24, ymin=y-sd, ymax=y+sd), width=0.25)
+```
+
+```{r}
+summary(basic_ols)$coefficients[,2]
+varNames = names(basic_ols$coefficients)[1:5]
+varNames
+#coefplot(summary(basic_ols)$coefficients[1:5,1], summary(basic_ols)$coefficients[1:5,2], vertical=FALSE, varnames=varNames)
+coefplot(basic_ols, keep=varNames)
+```
+```{r}
+plot(basic_ols$coefficients)
+```
