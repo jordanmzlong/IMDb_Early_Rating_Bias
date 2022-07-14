@@ -7,3 +7,5 @@ To investigate this phenomenon, I explore a dataset of reviews scraped from IMDb
 I find that the average movie's IMDb score declines by 0.5 points out of 10 in the first four months following the movie's release, with the long term amount of decline roughly stabilizing at 0.76 points out of 10 by three years after the movie's release. The average decline in ratings is summarized in the following figure.
 
 ![image info](./IMDbRatingDecline.png)
+
+For a summary of my work and a detailed model specification, please see the pdf "ECO1400_Term_Paper". To follow my exploratory data analysis and data transformations, please see the Jupyter Notebook "CleanerNotebook.ipynb". The actual models are run in the R markdown file "FinalProject.Rmd".
