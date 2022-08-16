@@ -18,8 +18,7 @@ library(arm)
 
 
 ```{r}
-source("data directory path.R")
-dat <- read.csv(file="211215clean_movie_panel.csv", header=TRUE, sep=",", na = ".")
+dat <- read.csv(file="../211215clean_movie_panel.csv", header=TRUE, sep=",", na = ".")
 attach(dat)
 ```
 
@@ -51,12 +50,26 @@ stargazer(FE, RE, title="Panel Data", column.labels=c("FE","RE"), no.space = TRU
 #plot(RE$coefficients[2:25])
 #arrows(x1=summary(RE)$coefficients[2:25,2], angle=90)
 library(ggplot2)
+if(!require('hrbrthemes')) {
+  install.packages('hrbrthemes')
+  library('hrbrthemes')
+}
+if(!require('ggthemes')) {
+  install.packages('ggthemes')
+  library('ggthemes')
+}
+import_titillium_web()
 y <- RE$coefficients[2:25]
 sd <- summary(RE)$coefficients[2:25,2]
-qplot(1:24, RE$coefficients[2:25])+geom_errorbar(aes(x=1:24, ymin=y-sd, ymax=y+sd), width=0.25)
+qplot(1:24, RE$coefficients[2:25])+geom_errorbar(aes(x=1:24, ymin=y-sd, ymax=y+sd), width=0.25) + 
+  geom_point(aes(x=0,y=0)) +
+  ylab("Average IMDb Rating Relative to Month of Release") + xlab("Months Following Movie Release") +
+  ggtitle("Evolution of Average IMDb Movie Ratings Over Time in Months") + theme_bw() +
+  scale_x_continuous(minor_breaks = seq(0, 24, 1), breaks=seq(0,24,6))
 ```
 
 ```{r}
+RE$coefficients[1:25]
 summary(basic_ols)$coefficients[,2]
 varNames = names(basic_ols$coefficients)[1:5]
 varNames
